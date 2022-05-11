@@ -1,9 +1,9 @@
-import 'package:dicoding_mfde_submission/data/models/movie_model.dart';
-import 'package:dicoding_mfde_submission/domain/entities/movie.dart';
+import 'package:dicoding_mfde_submission/data/models/movie_tv_show_model.dart';
+import 'package:dicoding_mfde_submission/domain/entities/movie_tv_show.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  final tMovieModel = MovieModel(
+  const tMovieModel = MovieTvShowModel(
     adult: false,
     backdropPath: 'backdropPath',
     genreIds: [1, 2, 3],
@@ -17,12 +17,13 @@ void main() {
     video: false,
     voteAverage: 1,
     voteCount: 1,
+    type: 'movie',
   );
 
-  final tMovie = Movie(
+  final tMovie = MovieTvShow(
     adult: false,
     backdropPath: 'backdropPath',
-    genreIds: [1, 2, 3],
+    genreIds: const [1, 2, 3],
     id: 1,
     originalTitle: 'originalTitle',
     overview: 'overview',
@@ -33,6 +34,7 @@ void main() {
     video: false,
     voteAverage: 1,
     voteCount: 1,
+    type: 'movie',
   );
 
   test('should be a subclass of Movie entity', () async {

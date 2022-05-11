@@ -1,28 +1,29 @@
 import 'package:dartz/dartz.dart';
-import 'package:dicoding_mfde_submission/domain/entities/movie.dart';
-import 'package:dicoding_mfde_submission/domain/usecases/get_now_playing_movies.dart';
+import 'package:dicoding_mfde_submission/common/constants.dart';
+import 'package:dicoding_mfde_submission/domain/entities/movie_tv_show.dart';
+import 'package:dicoding_mfde_submission/domain/usecases/get_now_playing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 import '../../helpers/test_helper.mocks.dart';
 
 void main() {
-  late GetNowPlayingMovies usecase;
-  late MockMovieRepository mockMovieRepository;
+  late GetNowPlaying usecase;
+  late MockMovieTvShowRepository mockMovieRepository;
 
   setUp(() {
-    mockMovieRepository = MockMovieRepository();
-    usecase = GetNowPlayingMovies(mockMovieRepository);
+    mockMovieRepository = MockMovieTvShowRepository();
+    usecase = GetNowPlaying(mockMovieRepository);
   });
 
-  final tMovies = <Movie>[];
+  final tMovies = <MovieTvShow>[];
 
   test('should get list of movies from the repository', () async {
     // arrange
-    when(mockMovieRepository.getNowPlayingMovies())
+    when(mockMovieRepository.getNowPlaying(movies))
         .thenAnswer((_) async => Right(tMovies));
     // act
-    final result = await usecase.execute();
+    final result = await usecase.execute(movies);
     // assert
     expect(result, Right(tMovies));
   });

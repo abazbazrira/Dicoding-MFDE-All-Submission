@@ -18,7 +18,7 @@ Jika kamu menerapkan modular pada project, Anda dapat memanfaatkan berkas `test.
         sudo apt-get update -qq -y
         sudo apt-get install lcov -y
         ```
-    
+
     - Bagi pengguna **Mac**, jalankan perintah berikut pada terminal.
         ```
         brew install lcov
@@ -34,7 +34,7 @@ Jika kamu menerapkan modular pada project, Anda dapat memanfaatkan berkas `test.
             | ----------- | ----------- |
             | GENTHTML | C:\ProgramData\chocolatey\lib\lcov\tools\bin\genhtml |
             | LCOV_HOME | C:\ProgramData\chocolatey\lib\lcov\tools |
-        
+
 2. Untuk mempermudah proses verifikasi testing, jalankan perintah berikut.
     ```
     git init

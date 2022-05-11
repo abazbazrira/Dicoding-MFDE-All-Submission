@@ -1,7 +1,7 @@
-import 'package:dicoding_mfde_submission/domain/repositories/movie_repository.dart';
+import 'package:dicoding_mfde_submission/domain/repositories/movie_tv_show_repository.dart';
 
 class GetWatchListStatus {
-  final MovieRepository repository;
+  final MovieTvShowRepository repository;
 
   GetWatchListStatus(this.repository);
 

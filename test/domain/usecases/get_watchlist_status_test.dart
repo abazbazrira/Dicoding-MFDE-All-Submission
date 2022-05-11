@@ -6,10 +6,10 @@ import '../../helpers/test_helper.mocks.dart';
 
 void main() {
   late GetWatchListStatus usecase;
-  late MockMovieRepository mockMovieRepository;
+  late MockMovieTvShowRepository mockMovieRepository;
 
   setUp(() {
-    mockMovieRepository = MockMovieRepository();
+    mockMovieRepository = MockMovieTvShowRepository();
     usecase = GetWatchListStatus(mockMovieRepository);
   });
 

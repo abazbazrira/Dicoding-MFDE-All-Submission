@@ -3,15 +3,15 @@ import 'package:dicoding_mfde_submission/domain/usecases/save_watchlist.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import '../../dummy_data/dummy_objects.dart';
+import '../../dummy_data/movie/dummy_objects.dart';
 import '../../helpers/test_helper.mocks.dart';
 
 void main() {
   late SaveWatchlist usecase;
-  late MockMovieRepository mockMovieRepository;
+  late MockMovieTvShowRepository mockMovieRepository;
 
   setUp(() {
-    mockMovieRepository = MockMovieRepository();
+    mockMovieRepository = MockMovieTvShowRepository();
     usecase = SaveWatchlist(mockMovieRepository);
   });
 

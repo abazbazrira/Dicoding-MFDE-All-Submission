@@ -1,13 +1,14 @@
 import 'dart:convert';
 
-import 'package:dicoding_mfde_submission/data/models/movie_model.dart';
-import 'package:dicoding_mfde_submission/data/models/movie_response.dart';
+import 'package:dicoding_mfde_submission/common/constants.dart';
+import 'package:dicoding_mfde_submission/data/models/movie_tv_show_model.dart';
+import 'package:dicoding_mfde_submission/data/models/movie_tv_show_response.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../json_reader.dart';
 
 void main() {
-  final tMovieModel = MovieModel(
+  const tMovieModel = MovieTvShowModel(
     adult: false,
     backdropPath: "/path.jpg",
     genreIds: [1, 2, 3, 4],
@@ -21,16 +22,20 @@ void main() {
     video: false,
     voteAverage: 1.0,
     voteCount: 1,
+    type: 'movie',
   );
-  final tMovieResponseModel =
-      MovieResponse(movieList: <MovieModel>[tMovieModel]);
+
+  const tMovieResponseModel = MovieResponse(
+    movieTvShowList: <MovieTvShowModel>[tMovieModel],
+  );
+
   group('fromJson', () {
     test('should return a valid model from JSON', () async {
       // arrange
       final Map<String, dynamic> jsonMap =
-          json.decode(readJson('dummy_data/now_playing.json'));
+          json.decode(readJson('dummy_data/movie/now_playing.json'));
       // act
-      final result = MovieResponse.fromJson(jsonMap);
+      final result = MovieResponse.fromJson(jsonMap, movies);
       // assert
       expect(result, tMovieResponseModel);
     });
@@ -41,7 +46,7 @@ void main() {
       // arrange
 
       // act
-      final result = tMovieResponseModel.toJson();
+      final result = tMovieResponseModel.toJson(movies);
       // assert
       final expectedJsonMap = {
         "results": [
@@ -58,7 +63,8 @@ void main() {
             "title": "Title",
             "video": false,
             "vote_average": 1.0,
-            "vote_count": 1
+            "vote_count": 1,
+            'type': movies
           }
         ],
       };

@@ -1,14 +1,14 @@
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_mfde_submission/common/failure.dart';
-import 'package:dicoding_mfde_submission/domain/entities/movie.dart';
-import 'package:dicoding_mfde_submission/domain/repositories/movie_repository.dart';
+import 'package:dicoding_mfde_submission/domain/entities/movie_tv_show.dart';
+import 'package:dicoding_mfde_submission/domain/repositories/movie_tv_show_repository.dart';
 
 class GetPopularMovies {
-  final MovieRepository repository;
+  final MovieTvShowRepository repository;
 
   GetPopularMovies(this.repository);
 
-  Future<Either<Failure, List<Movie>>> execute() {
-    return repository.getPopularMovies();
+  Future<Either<Failure, List<MovieTvShow>>> execute(String type) {
+    return repository.getPopular(type);
   }
 }
