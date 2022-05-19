@@ -1,24 +1,38 @@
 import 'package:dicoding_mfde_submission/common/constants.dart';
+import 'package:dicoding_mfde_submission/common/ssl_pinning.dart';
 import 'package:dicoding_mfde_submission/common/utils.dart';
 import 'package:dicoding_mfde_submission/injection.dart' as di;
+import 'package:dicoding_mfde_submission/presentation/bloc/detail/detail_bloc.dart';
+import 'package:dicoding_mfde_submission/presentation/bloc/now_playing/now_playing_bloc.dart';
+import 'package:dicoding_mfde_submission/presentation/bloc/popular/popular_bloc.dart';
+import 'package:dicoding_mfde_submission/presentation/bloc/recommendation/recommendation_bloc.dart';
+import 'package:dicoding_mfde_submission/presentation/bloc/search/search_bloc.dart';
+import 'package:dicoding_mfde_submission/presentation/bloc/toprated/top_rated_bloc.dart';
+import 'package:dicoding_mfde_submission/presentation/bloc/watchlist/watchlist_bloc.dart';
 import 'package:dicoding_mfde_submission/presentation/pages/about_page.dart';
-import 'package:dicoding_mfde_submission/presentation/pages/home_page.dart';
 import 'package:dicoding_mfde_submission/presentation/pages/detail_page.dart';
+import 'package:dicoding_mfde_submission/presentation/pages/home_page.dart';
 import 'package:dicoding_mfde_submission/presentation/pages/popular_page.dart';
 import 'package:dicoding_mfde_submission/presentation/pages/search_page.dart';
 import 'package:dicoding_mfde_submission/presentation/pages/top_rated_page.dart';
 import 'package:dicoding_mfde_submission/presentation/pages/watchlist_page.dart';
-import 'package:dicoding_mfde_submission/presentation/provider/detail_notifier.dart';
-import 'package:dicoding_mfde_submission/presentation/provider/list_notifier.dart';
-import 'package:dicoding_mfde_submission/presentation/provider/search_notifier.dart';
-import 'package:dicoding_mfde_submission/presentation/provider/popular_movies_notifier.dart';
-import 'package:dicoding_mfde_submission/presentation/provider/top_rated_notifier.dart';
-import 'package:dicoding_mfde_submission/presentation/provider/watchlist_notifier.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await HttpSslPinning.init();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+
   di.init();
   runApp(const MyApp());
 }
@@ -30,23 +44,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => di.locator<ListNotifier>(),
+        BlocProvider(
+          create: (_) => di.locator<NowPlayingBloc>(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<DetailNotifier>(),
+        BlocProvider(
+          create: (_) => di.locator<PopularBloc>(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<SearchNotifier>(),
+        BlocProvider(
+          create: (_) => di.locator<TopRatedBloc>(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<TopRatedNotifier>(),
+        BlocProvider(
+          create: (_) => di.locator<RecommendationBloc>(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<PopularMoviesNotifier>(),
+        BlocProvider(
+          create: (_) => di.locator<DetailBloc>(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<WatchlistNotifier>(),
+        BlocProvider(
+          create: (_) => di.locator<WatchlistBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => di.locator<SearchBloc>(),
         ),
       ],
       child: MaterialApp(
@@ -57,7 +74,6 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: kRichBlack,
           textTheme: kTextTheme,
         ),
-        // home: HomeMoviePage(),
         home: const HomePage(),
         navigatorObservers: [routeObserver],
         onGenerateRoute: (RouteSettings settings) {
@@ -89,13 +105,15 @@ class MyApp extends StatelessWidget {
             case AboutPage.routeName:
               return MaterialPageRoute(builder: (_) => const AboutPage());
             default:
-              return MaterialPageRoute(builder: (_) {
-                return const Scaffold(
-                  body: Center(
-                    child: Text('Page not found :('),
-                  ),
-                );
-              });
+              return MaterialPageRoute(
+                builder: (_) {
+                  return const Scaffold(
+                    body: Center(
+                      child: Text('Page not found :('),
+                    ),
+                  );
+                },
+              );
           }
         },
       ),

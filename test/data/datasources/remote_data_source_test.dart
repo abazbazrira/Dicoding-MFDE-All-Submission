@@ -30,7 +30,7 @@ void main() {
             json.decode(readJson('dummy_data/movie/now_playing.json')), movies)
         .movieTvShowList;
 
-    test('should return list of Movie Model when the response code is 200',
+    test('should return now_playing of Movie Model when the response code is 200',
         () async {
       // arrange
       when(mockHttpClient.get(Uri.parse('$baseUrl/movie/now_playing?$apiKey')))
@@ -60,7 +60,7 @@ void main() {
             json.decode(readJson('dummy_data/movie/popular.json')), movies)
         .movieTvShowList;
 
-    test('should return list of movies when response is success (200)',
+    test('should return now_playing of movies when response is success (200)',
         () async {
       // arrange
       when(mockHttpClient.get(Uri.parse('$baseUrl/movie/popular?$apiKey')))
@@ -90,7 +90,7 @@ void main() {
             json.decode(readJson('dummy_data/movie/top_rated.json')), movies)
         .movieTvShowList;
 
-    test('should return list of movies when response code is 200 ', () async {
+    test('should return now_playing of movies when response code is 200 ', () async {
       // arrange
       when(mockHttpClient.get(Uri.parse('$baseUrl/movie/top_rated?$apiKey')))
           .thenAnswer((_) async =>
@@ -149,7 +149,7 @@ void main() {
         .movieTvShowList;
     int tId = 1;
 
-    test('should return list of Movie Model when the response code is 200',
+    test('should return now_playing of Movie Model when the response code is 200',
         () async {
       // arrange
       when(mockHttpClient
@@ -181,7 +181,7 @@ void main() {
         .movieTvShowList;
     String tQuery = 'Spiderman';
 
-    test('should return list of movies when response code is 200', () async {
+    test('should return now_playing of movies when response code is 200', () async {
       // arrange
       when(mockHttpClient
               .get(Uri.parse('$baseUrl/search/movie?$apiKey&query=$tQuery')))
@@ -212,7 +212,7 @@ void main() {
             tvShows)
         .movieTvShowList;
 
-    test('should return list of Tv Show Model when the response code is 200',
+    test('should return now_playing of Tv Show Model when the response code is 200',
         () async {
       // arrange
       when(mockHttpClient.get(Uri.parse('$baseUrl/tv/on_the_air?$apiKey')))
@@ -242,7 +242,7 @@ void main() {
             json.decode(readJson('dummy_data/tv_show/popular.json')), tvShows)
         .movieTvShowList;
 
-    test('should return list of tv_shows when response is success (200)',
+    test('should return now_playing of tv_shows when response is success (200)',
         () async {
       // arrange
       when(mockHttpClient.get(Uri.parse('$baseUrl/tv/popular?$apiKey')))
@@ -272,7 +272,7 @@ void main() {
             json.decode(readJson('dummy_data/tv_show/top_rated.json')), tvShows)
         .movieTvShowList;
 
-    test('should return list of tv_shows when response code is 200 ', () async {
+    test('should return now_playing of tv_shows when response code is 200 ', () async {
       // arrange
       when(mockHttpClient.get(Uri.parse('$baseUrl/tv/top_rated?$apiKey')))
           .thenAnswer((_) async => http.Response(
@@ -337,7 +337,7 @@ void main() {
             tvShows)
         .movieTvShowList;
 
-    test('should return list of Tv Show Model when the response code is 200',
+    test('should return now_playing of Tv Show Model when the response code is 200',
         () async {
       // arrange
       when(mockHttpClient
@@ -370,7 +370,7 @@ void main() {
         .movieTvShowList;
     String tQuery = 'Moon Knight';
 
-    test('should return list of tv_shows when response code is 200', () async {
+    test('should return now_playing of tv_shows when response code is 200', () async {
       // arrange
       when(mockHttpClient
               .get(Uri.parse('$baseUrl/search/tv?$apiKey&query=$tQuery')))

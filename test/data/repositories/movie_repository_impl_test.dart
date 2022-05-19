@@ -113,7 +113,7 @@ void main() {
   });
 
   group('Popular Movies', () {
-    test('should return movie list when call to data source is success',
+    test('should return movie now_playing when call to data source is success',
         () async {
       // arrange
       when(mockRemoteDataSource.getPopular(movies))
@@ -153,7 +153,7 @@ void main() {
   });
 
   group('Top Rated Movies', () {
-    test('should return movie list when call to data source is successful',
+    test('should return movie now_playing when call to data source is successful',
         () async {
       // arrange
       when(mockRemoteDataSource.getTopRated(movies))
@@ -263,7 +263,7 @@ void main() {
     final tMovieList = <MovieTvShowModel>[];
     final tId = 1;
 
-    test('should return data (movie list) when the call is successful',
+    test('should return data (movie now_playing) when the call is successful',
         () async {
       // arrange
       when(mockRemoteDataSource.getRecommendations(tId, movies))
@@ -308,7 +308,7 @@ void main() {
   group('Seach Movies', () {
     final tQuery = 'spiderman';
 
-    test('should return movie list when call to data source is successful',
+    test('should return movie now_playing when call to data source is successful',
         () async {
       // arrange
       when(mockRemoteDataSource.search(tQuery, movies))
@@ -403,7 +403,7 @@ void main() {
   });
 
   group('get watchlist movies', () {
-    test('should return list of Movies', () async {
+    test('should return now_playing of Movies', () async {
       // arrange
       when(mockLocalDataSource.getWatchlistMovies())
           .thenAnswer((_) async => [testMovieTable]);

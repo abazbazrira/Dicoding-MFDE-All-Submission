@@ -1,9 +1,8 @@
-import 'package:dicoding_mfde_submission/common/state_enum.dart';
 import 'package:dicoding_mfde_submission/common/utils.dart';
-import 'package:dicoding_mfde_submission/presentation/provider/watchlist_notifier.dart';
+import 'package:dicoding_mfde_submission/presentation/bloc/watchlist/watchlist_bloc.dart';
 import 'package:dicoding_mfde_submission/presentation/widgets/item_movie_tv_show_card_list.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WatchlistPage extends StatefulWidget {
   static const routeName = '/watchlist';
@@ -18,9 +17,11 @@ class _WatchlistPageState extends State<WatchlistPage> with RouteAware {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        Provider.of<WatchlistNotifier>(context, listen: false)
-            .fetchWatchlist());
+    Future.microtask(
+      () => {
+        context.read<WatchlistBloc>().add(const FetchWatchlist()),
+      },
+    );
   }
 
   @override
@@ -31,7 +32,11 @@ class _WatchlistPageState extends State<WatchlistPage> with RouteAware {
 
   @override
   void didPopNext() {
-    Provider.of<WatchlistNotifier>(context, listen: false).fetchWatchlist();
+    Future.microtask(
+      () => {
+        context.read<WatchlistBloc>().add(const FetchWatchlist()),
+      },
+    );
   }
 
   @override
@@ -42,24 +47,25 @@ class _WatchlistPageState extends State<WatchlistPage> with RouteAware {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Consumer<WatchlistNotifier>(
-          builder: (context, data, child) {
-            if (data.watchlistState == RequestState.loading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (data.watchlistState == RequestState.loaded) {
+        child: BlocBuilder<WatchlistBloc, WatchlistState>(
+          builder: (context, state) {
+            if (state is WatchlistHasData) {
               return ListView.builder(
                 itemBuilder: (context, index) {
-                  final movie = data.watchlistMovies[index];
+                  final movie = state.result[index];
                   return MovieTvShowCard(movie, movie.type.toString());
                 },
-                itemCount: data.watchlistMovies.length,
+                itemCount: state.result.length,
               );
-            } else {
+            } else if (state is WatchlistError) {
               return Center(
                 key: const Key('error_message'),
-                child: Text(data.message),
+                child: Text(state.message),
+              );
+            } else {
+              return const Center(
+                key: Key('error_message'),
+                child: Text('Something problem'),
               );
             }
           },

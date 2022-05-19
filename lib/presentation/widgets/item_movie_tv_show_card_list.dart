@@ -54,6 +54,7 @@ class MovieTvShowCard extends StatelessWidget {
                 bottom: 16,
               ),
               child: ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
                 child: CachedNetworkImage(
                   imageUrl: '$baseImageUrl${movie.posterPath}',
                   width: 80,
@@ -62,7 +63,6 @@ class MovieTvShowCard extends StatelessWidget {
                   ),
                   errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
-                borderRadius: const BorderRadius.all(Radius.circular(8)),
               ),
             ),
           ],

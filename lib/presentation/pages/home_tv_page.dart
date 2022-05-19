@@ -1,11 +1,12 @@
 import 'package:dicoding_mfde_submission/common/constants.dart';
-import 'package:dicoding_mfde_submission/common/state_enum.dart';
+import 'package:dicoding_mfde_submission/presentation/bloc/now_playing/now_playing_bloc.dart';
+import 'package:dicoding_mfde_submission/presentation/bloc/popular/popular_bloc.dart';
+import 'package:dicoding_mfde_submission/presentation/bloc/toprated/top_rated_bloc.dart';
 import 'package:dicoding_mfde_submission/presentation/pages/popular_page.dart';
 import 'package:dicoding_mfde_submission/presentation/pages/top_rated_page.dart';
-import 'package:dicoding_mfde_submission/presentation/provider/list_notifier.dart';
 import 'package:dicoding_mfde_submission/presentation/widgets/item_movie_tv_show_poster_list.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeTvPage extends StatefulWidget {
   const HomeTvPage({Key? key}) : super(key: key);
@@ -18,10 +19,13 @@ class _HomeTvPageState extends State<HomeTvPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => Provider.of<ListNotifier>(context, listen: false)
-      ..fetchNowPlaying(tvShows)
-      ..fetchPopular(tvShows)
-      ..fetchTopRated(tvShows));
+    Future.microtask(
+      () => {
+        context.read<NowPlayingBloc>().add(const NowPlaying(tvShows)),
+        context.read<PopularBloc>().add(const Popular(tvShows)),
+        context.read<TopRatedBloc>().add(const TopRated(tvShows)),
+      },
+    );
   }
 
   @override
@@ -36,18 +40,19 @@ class _HomeTvPageState extends State<HomeTvPage> {
               'On The Air',
               style: kHeading6,
             ),
-            Consumer<ListNotifier>(builder: (context, data, child) {
-              final state = data.nowPlayingState;
-              if (state == RequestState.loading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (state == RequestState.loaded) {
-                return MovieTvShowPosterList(data.nowPlaying, tvShows);
-              } else {
-                return const Text('Failed');
-              }
-            }),
+            BlocBuilder<NowPlayingBloc, NowPlayingState>(
+              builder: (context, state) {
+                if (state is NowPlayingLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is NowPlayingHasData) {
+                  return MovieTvShowPosterList(state.result, tvShows);
+                } else {
+                  return const Text('Failed');
+                }
+              },
+            ),
             _buildSubHeading(
               title: 'Popular',
               onTap: () => Navigator.pushNamed(
@@ -56,18 +61,19 @@ class _HomeTvPageState extends State<HomeTvPage> {
                 arguments: tvShows,
               ),
             ),
-            Consumer<ListNotifier>(builder: (context, data, child) {
-              final state = data.popularState;
-              if (state == RequestState.loading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (state == RequestState.loaded) {
-                return MovieTvShowPosterList(data.popular, tvShows);
-              } else {
-                return const Text('Failed');
-              }
-            }),
+            BlocBuilder<PopularBloc, PopularState>(
+              builder: (context, state) {
+                if (state is PopularLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is PopularHasData) {
+                  return MovieTvShowPosterList(state.result, tvShows);
+                } else {
+                  return const Text('Failed');
+                }
+              },
+            ),
             _buildSubHeading(
               title: 'Top Rated',
               onTap: () => Navigator.pushNamed(
@@ -76,18 +82,19 @@ class _HomeTvPageState extends State<HomeTvPage> {
                 arguments: tvShows,
               ),
             ),
-            Consumer<ListNotifier>(builder: (context, data, child) {
-              final state = data.topRatedState;
-              if (state == RequestState.loading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (state == RequestState.loaded) {
-                return MovieTvShowPosterList(data.topRated, tvShows);
-              } else {
-                return const Text('Failed');
-              }
-            }),
+            BlocBuilder<TopRatedBloc, TopRatedState>(
+              builder: (context, state) {
+                if (state is TopRatedLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is TopRatedHasData) {
+                  return MovieTvShowPosterList(state.result, tvShows);
+                } else {
+                  return const Text('Failed');
+                }
+              },
+            ),
           ],
         ),
       ),

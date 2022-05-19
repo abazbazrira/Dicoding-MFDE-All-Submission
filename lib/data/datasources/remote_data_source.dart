@@ -1,18 +1,23 @@
 import 'dart:convert';
 
 import 'package:dicoding_mfde_submission/common/constants.dart';
+import 'package:dicoding_mfde_submission/common/exception.dart';
 import 'package:dicoding_mfde_submission/data/models/movie_tv_detail_model.dart';
 import 'package:dicoding_mfde_submission/data/models/movie_tv_show_model.dart';
 import 'package:dicoding_mfde_submission/data/models/movie_tv_show_response.dart';
-import 'package:dicoding_mfde_submission/common/exception.dart';
 import 'package:http/http.dart' as http;
 
 abstract class RemoteDataSource {
   Future<List<MovieTvShowModel>> getNowPlaying(String type);
+
   Future<List<MovieTvShowModel>> getPopular(String type);
+
   Future<List<MovieTvShowModel>> getTopRated(String type);
+
   Future<MovieTvShowDetailResponse> getDetail(int id, String type);
+
   Future<List<MovieTvShowModel>> getRecommendations(int id, String type);
+
   Future<List<MovieTvShowModel>> search(String query, String type);
 }
 
@@ -26,8 +31,11 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<List<MovieTvShowModel>> getNowPlaying(String type) async {
-    final response = await client.get(Uri.parse(
-        '$baseUrl/$type/${type == movies ? 'now_playing' : 'on_the_air'}?$apiKey'));
+    final response = await client.get(
+      Uri.parse(
+        '$baseUrl/$type/${type == movies ? 'now_playing' : 'on_the_air'}?$apiKey',
+      ),
+    );
 
     if (response.statusCode == 200) {
       return MovieResponse.fromJson(json.decode(response.body), type)

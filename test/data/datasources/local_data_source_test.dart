@@ -87,7 +87,7 @@ void main() {
   });
 
   group('get watchlist movies', () {
-    test('should return list of MovieTable from database', () async {
+    test('should return now_playing of MovieTable from database', () async {
       // arrange
       when(mockDatabaseHelper.getWatchlistMovies())
           .thenAnswer((_) async => [testMovieMap]);

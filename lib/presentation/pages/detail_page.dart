@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dicoding_mfde_submission/common/constants.dart';
-import 'package:dicoding_mfde_submission/common/state_enum.dart';
 import 'package:dicoding_mfde_submission/domain/entities/genre.dart';
-import 'package:dicoding_mfde_submission/domain/entities/movie_tv_show.dart';
 import 'package:dicoding_mfde_submission/domain/entities/movie_tv_show_detail.dart';
-import 'package:dicoding_mfde_submission/presentation/provider/detail_notifier.dart';
+import 'package:dicoding_mfde_submission/presentation/bloc/detail/detail_bloc.dart';
+import 'package:dicoding_mfde_submission/presentation/bloc/recommendation/recommendation_bloc.dart';
+import 'package:dicoding_mfde_submission/presentation/bloc/watchlist/watchlist_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:provider/provider.dart';
 
 class DetailPageArguments {
   final int id;
@@ -38,34 +38,38 @@ class _DetailPageState extends State<DetailPage> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      Provider.of<DetailNotifier>(context, listen: false)
-          .fetchDetail(widget.args.id, widget.args.type);
-      Provider.of<DetailNotifier>(context, listen: false)
-          .loadWatchlistStatus(widget.args.id);
+      context.read<DetailBloc>().add(Detail(widget.args.id, widget.args.type));
+      context.read<RecommendationBloc>().add(
+            Recommendation(
+              widget.args.id,
+              widget.args.type,
+            ),
+          );
+      context.read<WatchlistBloc>().add(FetchWatchlistById(widget.args.id));
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer<DetailNotifier>(
-        builder: (context, provider, child) {
-          if (provider.movieState == RequestState.loading) {
+      body: BlocBuilder<DetailBloc, DetailState>(
+        builder: (context, state) {
+          if (state is DetailLoading) {
             return const Center(
               child: CircularProgressIndicator(),
             );
-          } else if (provider.movieState == RequestState.loaded) {
-            final movie = provider.movie;
+          } else if (state is DetailHasData) {
+            final movie = state.result;
             return SafeArea(
               child: DetailContent(
                 movie: movie,
-                recommendations: provider.movieRecommendations,
-                isAddedWatchlist: provider.isAddedToWatchlist,
                 type: widget.args.type,
               ),
             );
+          } else if (state is DetailError) {
+            return Text(state.message);
           } else {
-            return Text(provider.message);
+            return const Text('');
           }
         },
       ),
@@ -75,15 +79,11 @@ class _DetailPageState extends State<DetailPage> {
 
 class DetailContent extends StatelessWidget {
   final MovieTvShowDetail movie;
-  final List<MovieTvShow> recommendations;
-  final bool isAddedWatchlist;
   final String type;
 
   const DetailContent({
     Key? key,
     required this.movie,
-    required this.recommendations,
-    required this.isAddedWatchlist,
     required this.type,
   }) : super(key: key);
 
@@ -127,50 +127,48 @@ class DetailContent extends StatelessWidget {
                               movie.title,
                               style: kHeading5,
                             ),
-                            ElevatedButton(
-                              onPressed: () async {
-                                if (!isAddedWatchlist) {
-                                  await Provider.of<DetailNotifier>(context,
-                                          listen: false)
-                                      .addWatchlist(movie);
-                                } else {
-                                  await Provider.of<DetailNotifier>(context,
-                                          listen: false)
-                                      .removeFromWatchlist(movie);
-                                }
+                            BlocBuilder<WatchlistBloc, WatchlistState>(
+                              builder: (context, state) {
+                                return ElevatedButton(
+                                  onPressed: () async {
+                                    if (state is WatchlistStatusHasData) {
+                                      if (!state.result) {
+                                        context
+                                            .read<WatchlistBloc>()
+                                            .add(AddWatchlist(movie));
+                                      } else {
+                                        context
+                                            .read<WatchlistBloc>()
+                                            .add(DeleteWatchlist(movie));
+                                      }
 
-                                final message = Provider.of<DetailNotifier>(
-                                        context,
-                                        listen: false)
-                                    .watchlistMessage;
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(state.message)));
+                                    }
 
-                                if (message ==
-                                        DetailNotifier
-                                            .watchlistAddSuccessMessage ||
-                                    message ==
-                                        DetailNotifier
-                                            .watchlistRemoveSuccessMessage) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(message)));
-                                } else {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          content: Text(message),
-                                        );
-                                      });
-                                }
+                                    if (state is WatchlistError) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              content: Text(state.message),
+                                            );
+                                          });
+                                    }
+                                  },
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      (state is WatchlistStatusHasData &&
+                                              state.result)
+                                          ? const Icon(Icons.check)
+                                          : const Icon(Icons.add),
+                                      const Text('Watchlist'),
+                                    ],
+                                  ),
+                                );
                               },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  isAddedWatchlist
-                                      ? const Icon(Icons.check)
-                                      : const Icon(Icons.add),
-                                  const Text('Watchlist'),
-                                ],
-                              ),
                             ),
                             Text(
                               _showGenres(movie.genres),
@@ -205,25 +203,21 @@ class DetailContent extends StatelessWidget {
                               'Recommendations',
                               style: kHeading6,
                             ),
-                            Consumer<DetailNotifier>(
-                              builder: (context, data, child) {
-                                if (data.recommendationState ==
-                                    RequestState.loading) {
+                            BlocBuilder<RecommendationBloc,
+                                RecommendationState>(
+                              builder: (context, state) {
+                                if (state is RecommendationLoading) {
                                   return const Center(
                                     child: CircularProgressIndicator(),
                                   );
-                                } else if (data.recommendationState ==
-                                    RequestState.error) {
-                                  return Text(data.message);
-                                } else if (data.recommendationState ==
-                                    RequestState.loaded) {
+                                } else if (state is RecommendationHasData) {
                                   return SizedBox(
                                     height: 150,
                                     child: ListView.builder(
                                       scrollDirection: Axis.horizontal,
                                       itemBuilder: (context, index) {
-                                        final movieTvShow =
-                                            recommendations[index];
+                                        final movieTvShow = state.result[index];
+                                        // recommendations[index];
                                         final args = DetailPageArguments(
                                             id: movieTvShow.id, type: type);
                                         return Padding(
@@ -257,9 +251,11 @@ class DetailContent extends StatelessWidget {
                                           ),
                                         );
                                       },
-                                      itemCount: recommendations.length,
+                                      itemCount: state.result.length,
                                     ),
                                   );
+                                } else if (state is RecommendationError) {
+                                  return Text(state.message);
                                 } else {
                                   return Container();
                                 }
@@ -306,7 +302,7 @@ class DetailContent extends StatelessWidget {
   String _showGenres(List<Genre> genres) {
     String result = '';
     for (var genre in genres) {
-      result += genre.name + ', ';
+      result += '${genre.name}, ';
     }
 
     if (result.isEmpty) {

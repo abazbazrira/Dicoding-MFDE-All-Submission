@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "242413804455",
+    "project_id": "dicoding-bazrira",
+    "storage_bucket": "dicoding-bazrira.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:242413804455:android:2a93ae595b19201ee33482",
+        "android_client_info": {
+          "package_name": "id.bazrira.dicoding_mfde_submission"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "242413804455-ki4jtss06pp4rk855scb96duoegfcrek.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQDrYFHC-iZoFjAVYgdBFpyfmU5oI9RLg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "242413804455-ki4jtss06pp4rk855scb96duoegfcrek.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "242413804455-vt09iuh0cm4i6s7n0hailmcifmkqdrqp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.dicodingMfdeSubmission"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
