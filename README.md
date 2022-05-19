@@ -1,3 +1,4 @@
+[![Codemagic build status](https://api.codemagic.io/apps/628696ef178d2416666909c9/628696ef178d2416666909c8/status_badge.svg)](https://codemagic.io/apps/628696ef178d2416666909c9/628696ef178d2416666909c8/latest_build)
 # dicoding_mfde_submission
 
 Dicoding-MFDE-Submission
